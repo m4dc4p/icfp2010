@@ -1,0 +1,116 @@
+/* 
+    Document   : standard
+    Created on : 13.06.2010, 23:18:13
+    Author     : JHannes
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+root { 
+    display: block;
+}
+
+body {
+    background: #eee;
+    font-family: calibri, verdana, arial, courier;
+    line-height: 150%;
+}
+
+a:visited {
+    color: blue;
+}
+
+#page {
+    width: 800px;
+    margin: 0px auto;
+    padding: 0px;
+}
+
+#head, #head2010 {
+    height: 80px;
+    text-align: center;
+    color: navy;
+}
+
+#head h3, #head2010 h3 {
+    margin: 0px;
+    font-size: 200%;
+    font-weight: bold;
+    letter-spacing: 1px;
+    /*text-decoration: underline;*/
+    margin-top: 10px;
+}
+
+#head2010 h3 {
+    margin: 0px;
+    font-size: 150%;
+    /*font-weight: normal;*/
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+#content {
+    padding-top: 5px;
+    padding-left: 50px;
+    padding-right: 70px;
+}
+#contestList li {
+    list-style-type: none;
+}
+
+#content p {
+    text-align: justify;
+}
+#content a {
+    text-decoration: none;
+}
+
+#contestList a {
+    display: block;
+    border-top: 1px solid gray;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    padding: 2px 10px;
+    width: 585px;
+    text-decoration: none;
+}
+
+#content ul a.last {
+    border-bottom: 1px solid gray;
+}
+
+#content p {
+    margin-top: 0px;
+    margin-bottom: 15px;
+}
+
+#content ul a:hover {
+    background: #ccc;
+}
+
+#board #top {
+    height: 20px;
+    background: url(../img/content-top.png);
+    background-repeat: no-repeat;
+    background-position: bottom;
+}
+
+#board #mid {
+    background: url(../img/content-mid.png);
+    background-repeat: repeat-y;
+    background-position: center;
+    padding-top: 5px;
+    padding-bottom: 12px;
+}
+
+#board #bottom {
+    height: 25px;
+    background: url(../img/content-bottom.png);
+    background-repeat: no-repeat;
+    background-position: top;
+}

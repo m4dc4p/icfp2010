@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0033)http://icfpcontest.org/2010/task/ -->
+<HTML xmlns="http://www.w3.org/1999/xhtml"><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+
+        <TITLE>ICFPcontest - Task</TITLE>
+
+        <LINK rel="stylesheet" type="text/css" media="screen" href="./ICFPcontest - Task_files/standard.css">
+
+        <LINK rel="shortcut icon" href="http://icfpcontest.org/favicon-htwk-32x32.ico" type="image/vnd.microsoft.icon">
+        <LINK rel="icon" href="http://icfpcontest.org/htwklogo-16x16-blau.ico" type="image/vnd.microsoft.icon">
+    </HEAD><BODY>
+        <DIV id="page">
+            <DIV id="head">
+                <IMG src="./ICFPcontest - Task_files/banner-task.png" alt="Task">
+            </DIV>
+
+            <DIV id="board">
+                <DIV id="top"></DIV>
+                <DIV id="mid">
+                    <DIV id="content">
+                        <!--<h2>Task Description</h2>-->
+
+                        <P>This year's contest task is simple: make money in</P>
+			<H3>International Car and Fuel Production</H3>
+
+
+<HR>
+<P><B>Table of Contents</B></P>
+<UL>
+<LI><A href="http://icfpcontest.org/2010/task/#market">The Market for Cars and Fuels</A></LI>
+<LI><A href="http://icfpcontest.org/2010/task/#scoring">Scoring</A></LI>
+<LI><A href="http://icfpcontest.org/2010/task/#technical">Technical Specification of Cars</A></LI>
+<LI><A href="http://icfpcontest.org/2010/task/#proper">Proper Cars</A></LI>
+<LI><A href="http://icfpcontest.org/2010/task/#fuels">Fuels</A></LI>
+<LI><A href="http://icfpcontest.org/2010/task/#ternary">Ternary Streams</A></LI>
+<LI><A href="http://icfpcontest.org/2010/task/#circuits">Circuits</A></LI>
+<LI><A href="http://icfpcontest.org/2010/task/#remarks">Remarks on Strategy</A></LI>
+</UL>
+
+<HR>
+<A name="market"></A>
+                        <P><B>The Market for Cars and Fuels</B></P>
+                        <P>You are in the automobile business and you are
+                        manufacturing cars and fuels. Each car has subtly
+                        different specifications, so some fuels may suit its
+                        engine, and others may not. Given a car and a fuel, it
+                        is easy to check whether the fuel fits the car, and that
+                        is what the contest server will be doing. Given only the
+                        car, it may not be easy to design a fuel that fits. This
+                        will be part of your task. Cars are open-sourced (anyone
+                        can read their specification), but fuels are closed-sourced
+                        (so you cannot copy others' fuels).</P>
+
+                        <P>During the contest, you will execute two types of
+                        actions:</P>
+
+                        <UL>
+                            <LI>compute and upload fuel for a car;</LI>
+                            <LI>upload a new car, with matching fuel.</LI>
+                        </UL>
+
+                        <P>This is your source of income, and we will compute
+                        and display your score (in short intervals).</P>
+
+                        <P>Each car on the market is a constant source of
+                        profit. For each car, the profit is shared among all
+                        manufacturers of fuels for that car. This includes the
+                        creator of the car. Shares are unequal, and the
+                        distribution of profits favors those suppliers with
+                        efficient fuel factories.</P>
+
+                        <P>So your aim is to design fuels that fit others' cars,
+                        and to design cars for which you can supply fuel, but
+                        others cannot.</P>
+
+                        <P>Initially, some cars are already on the market.
+                        During the contest, more will be added, by participants,
+                        and possibly by the organizers.</P>
+
+                        <P>At any time during the contest, the number of cars
+                        submitted by you cannot be larger that number of others'
+                        cars for which you did supply fuels.</P>
+
+                        <P>During the contest, you may submit at most 72 cars
+                        (seventy-two, the number of hours of the contest
+                        duration).</P>
+
+                        <P>This bound is independent of whether you take part in
+                        the lightning division, or the main division. In
+                        particular, if you used up your car submission quota
+                        during the lightning division, you may continue to take
+                        part in the contest, but only by submitting fuels.</P>
+
+                        <HR>
+                        
+<A name="scoring"></A>
+                        <H2>Scoring</H2>
+
+                        <P>For each car, shares are paid out to each team that
+                        has provided fuel for that car. Fuels are sorted by
+                        size, and (for equal size) time of submission. So,
+                        smaller and earlier is better, and smaller is more
+                        important. If there are n teams for one car, then they
+                        get 1/n, 1/(n+1), ... 1/(2*n-1) points, respectively.
+                        </P>
+
+                        <P>The fuel that was initially provided by the team that
+                        built the car, does also take part in this evaluation.
+                        This is the way to ensure that the car's designer gets
+                        some profit.</P>
+
+                        <P>Shares pay dividends at regular intervals. 
+			  The payments will be
+                        accumulated on the team's account. Sadly, there will be
+                        a tax: in each period, you have to pay a fixed
+                        percentage, in such a way that you will lose 50 percent over the
+                        course of one day.</P>
+
+                        <P>When you submit a new car, it will be published
+                        immediately. It will start producing profit
+                        only after one full time period.</P>
+
+                        <P>The teams' scores will be published (updated after
+                        each period) - but we will hide the top five entries
+                        from this highscore list. The top teams will be asked
+                        to send in their source code for examination, and the
+                        winners of the contest will only be announced at the
+                        ICFP conference this September.</P>
+
+                        <HR>
+                      
+<A name="technical"></A>
+                        <H2>Technical Specification of Cars</H2>
+
+                        <P>A car's engine is given by a list of reaction
+                        chambers. Each chamber contains two pipes (called the
+                        upper and the lower pipe). Each pipe is a sequence of
+                        sections. Both pipes suck in air, which is freely
+                        available, and is in fact a mixture of several
+                        ingredients.</P>
+
+                        <P>In each section, a chemical reaction combines
+                        ingredients coming from the neighboring section on the
+                        left, and of fuel that is fed directly to the section
+                        from a fuel tank, and the output ingredients are fed to
+                        the next section on the right. Finally, the output of
+                        the upper and lower pipe are joined to the Difference
+                        Engine that actually produces mechanical energy. The
+                        connections from tanks to sections are hard-wired by the
+                        car manufacturer.</P>
+
+                        <P>For example, a car may have two fuel tanks, numbered
+                        0 and 1, respectively. Its engine may consist of just
+                        one chamber. There are two pipes. The upper pipe
+                        consists of two sections, both fed from tank 0, and the
+                        lower pipe consists of three sections, where the first
+                        and last are fed from tank 0, while the middle section
+                        is fed from tank 1.</P>
+
+                        <PRE>      upper pipe:  -&gt; section -&gt; section ------------.
+    /                   /          /                  \
+   /         fuel 0  --&lt;----------'--------.      difference      positive
+ air                    \                   \       engine  ---&gt;  energy
+   \                     \                   \        /
+    \ lower pipe:  -&gt; section -&gt; section -&gt; section -'
+                                    /
+             fuel 1 ---------------'
+                        </PRE>
+                        
+                        <HR>
+
+<A name="proper"></A>    
+                        <H2>Proper Cars</H2>
+
+                        <P>A car is only allowed for street traffic if it</P>
+                        
+                        <UL>
+                            <LI>uses at most 6 (six) different fuel tanks,</LI>
+                            <LI>is normalized,</LI>
+                            <LI>is connected.</LI>
+                        </UL>
+
+                        <P>Two cars will be considered equivalent if we can
+                        transform one to the other by swapping the order of
+                        chambers, duplicating chambers, and swapping the order
+                        of tanks. A car is normalized if its ternary encoding
+                        (see below) is lexicographically smallest among those of
+                        its equivalents.</P>
+
+                        <P>Connectedness is defined via the following: We say
+                        that tank t depends on tank s directly, if there is a
+                        chamber c such that tank s feeds some section of c's
+                        upper pipe, and tank t feeds some section of c's lower
+                        pipe. We then say that tank t depends on tank s
+                        indirectly, if there is a sequence of dependencies
+                        leading from s to t. A car is connected if for each
+                        pair of tanks (s,t), tank t depends on tank s. Note that
+                        the example car is not connected, since there is no
+                        dependency from tank 1 to tank 0.</P>
+
+                        <HR>
+                     
+<A name="fuels"></A>
+                        <H2>Fuels</H2>
+
+                        <P>In each section of a pipe, fuel reacts with air. This
+                        changes the composition of air that is fed into the next
+                        section. The change is linear, in the sense that the
+                        amount of ingredient k in the output of a section
+fuelled with  c   is given by 
+</P><PRE>out(k) = c(1,k) * in(1) + .. + c(n,k) * in(n)
+</PRE>
+where in(i) is the amount of ingredient  i  in the incoming air.<P></P>
+
+                        <P>To provide fuel for a car, a manufacturer has to
+                        give, for each tank c, the values c(i,k) that
+                        characterize its fuel.</P>
+
+                        <P>Air contains many ingredients, but you may choose 
+			  the number n of ingredients to work with.</P>
+
+
+                        <P>The difference engine only works if for each
+                        ingredient k, the amount of ingredient k in the upper pipe's output
+                        is at least as large as the amount of ingredient k in the output
+                        from the lower pipe. This condition must hold for all
+                        air conditions, that is, independent of the consistency
+                        of incoming air.</P>
+
+                        <P>The first ingredient of air plays a special role: the
+                        incoming air will always contain it, the fuels may never
+                        remove it (the coefficient c(1,1) must always be
+                        positive), and the difference engine needs it.</P>
+
+                        <P>Some of reaction chambers are declared as Main
+                        chambers, and here the amount of the first ingredient in
+                        the upper pipe's output must be strictly larger than the
+                        amount of this ingredient in the lower pipe's output.
+                        Other chambers are Auxiliary. The car manufacturer
+                        declares whether a chamber is Main or Auxiliary.</P>
+                        
+                        <HR>
+           
+<A name="ternary"></A>
+                        <H2>Ternary Streams</H2>
+
+                        <P>This wasn't the ICFP contest if it was that easy.</P>
+
+                        <P>Both cars and fuel descriptions are given as
+                        structured data, in fact,
+			  lists and tuples of ... of lists and tuples of natural numbers.
+                        </P>
+
+                        <P>The data for both cars and fuel will be encoded by a
+                        stream of trits (ternary bits) and, you guessed it, we
+                        won't tell you more about the encoding here, so you just
+                        have to make some educated guesses, based on the error
+                        messages of the stream parser on our server.</P>
+
+                        <P>Some hints are: the code can handle natural numbers
+                        of any size, and lists of any length. The code is
+                        self-delimiting, and indeed the parser will ignore
+                        trailing garbage after data for fuel, but not for cars.
+                        The code has some redundancy (not each trit string is a
+                        code word), but not much.</P>
+
+                        <P>For instance, this is the ternary code of some car:
+                        </P>
+
+                        <PRE>221022000022010112201010022001122011110220010
+                        </PRE>
+
+                        <HR>
+                      
+<A name="circuits"></A>
+                        <H2>Circuits</H2>
+
+                        <P>Does it still sound easy? Fear not, here's another
+                        obstacle: you cannot give the streams for
+                        the fuel description literally, but have to write a
+                        description for a factory that produces the stream you
+                        want from some input stream given by us.</P>
+
+                        <P>The factory is a circuit, built from gates and wires.
+                        Each gate has two inputs and two outputs. Each wire
+                        connects an output to an input. Each input and output
+                        must have exactly one wire. A wire that "goes forward"
+                        transports information immediately, and a wire that
+                        "goes backward" has a delay of one.</P>
+
+                        <P>To handle interaction with the world outside the
+                        circuit, we stipulate that each circuit contains a
+                        special "external" gate that has one input and one
+                        output. The circuit's input stream appears at the output
+                        of the external gate, and the circuit's output stream is
+                        fed to the external gate's input.</P>
+
+                        <P>So, the factory is producing a stream that describes
+                        fuel. The size of the factory is the number of its
+                        gates, and smaller factories are more efficient. (This
+                        is important for scoring.)</P>
+
+                        <P>You guessed it, we do not give the semantics of the
+                        gates here, and neither the syntax of circuits. Instead,
+                        we refer to an example key circuit</P>
+
+                        <PRE>19L:
+12R13R0#1R12R,
+14R0L0#4R9L,
+9R10R0#3L8L,
+2L17R0#5L9R,
+15R1L0#10R13R,
+3L18R0#6L15L,
+5L11R0#13L12L,
+19R16R0#11R8R,
+2R7R0#11L10L,
+1R3R0#18L2L,
+8R4L0#16L2R,
+8L7L0#15R6R,
+6R0R0#14L0L,
+6L4R0#14R0R,
+12L13L0#17L1L,
+5R11L0#16R4L,
+10L15L0#17R7R,
+14L16L0#18R3R,
+9L17L0#19R5R,
+X18L0#X7L:
+19L
+                        </PRE>
+
+                        <P>and its input</P>
+                        
+                        <PRE>[0,2,2,2,2,2,2,0,2,1,0,1,1,0,0,1,1]
+                        </PRE>
+
+                        <P>You need to find its output on your own. The first
+                        seventeen output trits, called "the key", have to be
+                        prefixed to any ternary stream that encodes a solution.
+                        </P>
+
+                        <P>You submit to our server any circuit you want and see
+                        the first trits of their output.</P>
+
+                        <P>It is of no direct use to submit the "key circuit"
+                        there because our server uses a different input stream.</P>
+
+<A name="remarks"></A>
+                        <H2>Remarks on Strategy</H2>
+
+
+                        <P>For the initial part of the contest, submit your
+                        circuits as solution attempts to Car #0 (with ternary
+                        code "0"). This is an extraordinary car that has no
+                        chambers, and needs no specific fuel. Its only purpose
+                        is to serve as a test case for computing the key prefix.
+                        </P>
+
+                        <P>The moment you submit a circuit that produces the key
+                        prefix on our server, you will get your first share of
+                        profit. Of course if you're late, this may be a small
+                        share.</P>
+
+
+
+                        <P>After you have submitted 72 cars,
+			  you still can make nice profit by fuelling others'
+                        cars.</P>
+
+                        <P>The results of the lightning division are scored
+                        after exactly 24 hours.
+			</P>
+                    </DIV>
+                </DIV>
+                <DIV id="bottom"></DIV>
+            </DIV>
+        </DIV>
+    
+
+
+
+</BODY></HTML>
