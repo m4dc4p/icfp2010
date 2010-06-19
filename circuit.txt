@@ -369,3 +369,15 @@ X18L0#X7L:
 0L: 
 X0R0#X0R:
 0L
+
+// The trivial circuit
+X: :X
+// gives prefix
+01202101210201202
+
+// This circuit is equivalent to the trivial one; it just adds a disconnected
+// gate
+X: 0L0R0#0L0R: X
+// gives prefix
+01202101210201202
+
