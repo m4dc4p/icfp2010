@@ -64,8 +64,15 @@ def stream2gate_counts(trits) : # [trit] -> [nat]
     print >> sys.stderr, trits
     counts = []
     for t in trits:
-        for c in xrange(1,period):
+        for c in xrange(1,period+1):
             # interesting: we don't care what the R wire outputs!
+            # 
+            # also: this is a greedy optimization: we select the
+            # minimum number of gates we can add to get the next bit,
+            # given what we've chosen so far.  could a global
+            # optimization do better?  no need to worry about this
+            # until we've learned how to produce fuel given cars of
+            # course ...
             if outs[(c + sum(counts)) % period][L] == t:
                 counts.append(c)
                 break
