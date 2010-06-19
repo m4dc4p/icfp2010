@@ -6,3 +6,10 @@
 #   echo 0000000000000000 | make circuit > 00000000000000000.cir
 circuit:
 	@ python gate_compiler.py | python circuit-concise.py
+# the key string iain found: 11021210112101221
+prefix_circuit:
+	@ { echo -n 11021210112101221; cat; } | make -s circuit
+
+# make a bunch of "dumb" circuits with the prefix
+#
+# for n in `seq 1 20`; do python -c "print '0'*$n" | make prefix_circuit > prefix-$n-zeros.cir; done
