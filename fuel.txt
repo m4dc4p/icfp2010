@@ -19,20 +19,20 @@ initially unconnected inputs float at 0
 the circuit is asynchronous ... i.e. forward propagation is instantaneous;
     	       		    	     backward happens at next clock tick
 
-the (commutative) operations are:
+the operations are:
+                             R
+                          |0 1 2
+     Lout = Lin - Rin    -+-----
+                         0|0 2 1
+                       L 1|1 0 2
+                         2|2 1 0
 
-				 |0  1  2
-     Lout = Lin + Rin		-+-------
-     	    	  		0|0  1  2
-    	       	 		1|1  2  0
-				2|2  0  1
 
-
-				 |0  1  2
-    Rout = (Lin * Rin) + 2      -+-------
-    	   	       	 	0|2  2  2
-				1|2  0  1
-				2|2  1  0
+                             |0  1  2
+     Rout = (Lin * Rin) + 2 -+-------
+                            0|2  2  2
+                            1|2  0  1
+                            2|2  1  0
 
           a
 ------------
