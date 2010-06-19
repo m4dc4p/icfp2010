@@ -1,3 +1,12 @@
+# input is a file where each gate is on a single line
+# only the outputs of each gate are specified, in L-to-R order
+# (as seen in examples subdir)
+
+# no concept of global input/output and external gate yet
+# thus, the generated output is not valid to submit to the contest website
+
+# author: hannes
+
 import re
 import fileinput
 
