@@ -14,6 +14,14 @@ X0R0#X0R:
 X0R0#X0L:
 1L
 
+// checking node ( 1 , 0LX0#X0L )
+// inconsistent output connection
+//    ( X , 1R , 1L )
+1R:
+1R0R0#1L0R,
+0LX0#X0L:
+1R
+
 // checking node ( 0 , X0L0#X0L )
 // inconsistent input connection
 //     ( 0L , X , 0R )

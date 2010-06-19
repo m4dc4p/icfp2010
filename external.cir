@@ -1,0 +1,6 @@
+// circuit output starts with
+//    02120112100002120
+// this is an illegal prefix.
+0L: 
+  X0R0#X0R:
+0L
