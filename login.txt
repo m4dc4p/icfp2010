@@ -1,0 +1,3 @@
+contest server: http://icfpcontest.org/icfp10/login
+login: ooplss2010
+password: 1484968454509167853383152085303289771444721966896581041165450
