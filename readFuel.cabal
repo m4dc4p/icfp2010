@@ -1,0 +1,12 @@
+name: ReadFuel
+version: 0.1
+cabal-version: >= 1.2
+build-type: Simple
+
+executable ReadFuel
+  main-is: ReadFuel.hs
+  build-depends: base >= 4 && < 5, strict >= 0.3 && < 1, parsec >= 3 && < 4
+  
+  ghc-options: -O2
+  hs-source-dirs: .
+                                
