@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/CircuitSimulator/src/icfp2010/CircuitSimulator.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<mapAttribute key="org.eclipse.debug.core.preferred_launchers">
+<mapEntry key="[run]" value="org.eclipse.jdt.launching.localJavaApplication"/>
+<mapEntry key="[debug]" value="org.eclipse.jdt.launching.localJavaApplication"/>
+</mapAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="icfp2010.CircuitSimulator"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="&quot;${project_loc:CircuitSimulator}/examples/key_input.txt&quot; &quot;${project_loc:CircuitSimulator}/examples/circuits/circuit_for_key.cir&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="CircuitSimulator"/>
+</launchConfiguration>

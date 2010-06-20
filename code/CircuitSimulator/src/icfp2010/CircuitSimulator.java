@@ -1,6 +1,10 @@
 package icfp2010;
 import icfp2010.circuits.CircuitBuilder;
+import icfp2010.circuits.parser.CircuitParserHarness;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +50,31 @@ public class CircuitSimulator {
 	private void cycleWires() {
 		for(Wire w : wires) {
 			w.cycle();
+		}
+	}
+	
+	public static void main(String[] args) {
+		if(args.length < 2) {
+			System.err.println("Required parameters: <trit_input_file> <circuit_descriptor>");
+			return;
+		}
+		
+		String inputFileName = args[0];
+		String circuitFileName = args[1];
+		try {
+			FileReader reader = new FileReader(inputFileName);
+			FileReader circuitReader = new FileReader(circuitFileName);
+			
+			List<Trit> input = TritUtils.read(reader);
+			CircuitParserHarness parser = new CircuitParserHarness(circuitReader);
+			CircuitSimulator simulator = new CircuitSimulator(parser);
+			
+			List<Trit> results = simulator.run(input);
+			TritUtils.print(results);
+		} catch (FileNotFoundException e) {
+			System.err.println(e.getMessage());
+		} catch (IOException e) {
+			System.err.println("Failed to read input file:" + e.getMessage());
 		}
 	}
 }
