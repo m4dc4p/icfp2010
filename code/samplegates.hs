@@ -1,3 +1,5 @@
+-- ghc -o samplegates -O samplegates.hs
+
 import qualified System
 import List
 import Data.Array.IArray

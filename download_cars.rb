@@ -12,12 +12,12 @@ agent.submit login_form
 
 # Logged in
 
+cnt = 0  
 open("cars.txt", "w") do |f|
   f.puts <<-EOS
 CAR ID\tDESCRIPTION
 ======\t===========
 EOS
-  
   car_list = agent.get('http://icfpcontest.org/icfp10/score/instanceTeamCount')
   car_list.forms.each do |car_form|
     # car_list.forms[0].action.slice(/icfp10\/instance\/(\d+)\//, 1)
@@ -27,9 +27,10 @@ EOS
     car_desc = car_page.content.slice(/"roo_solution_instance"(.*?)div/,1).slice(/label.*?(\d+)/,1)
     f.puts "#{car_id}\t#{car_desc}"
     print "*"
-    sleep 0.25
+    cnt += 1
+    sleep 0.1
   end
 end
 
-
-
+agent.get('http://icfpcontest.org/icfp10/static/j_spring_security_logout')
+puts "\n#{cnt} cars."
