@@ -132,7 +132,7 @@ dumpStage back_num i (ori:oris) =
 dumpStages :: Int -> Int -> [Stage] -> String
 dumpStages back_num num [] = ""
 dumpStages back_num num (stage:stages) =
-  dumpStage back_num num stage ++ "\n" ++
+  dumpStage back_num num stage ++
   dumpStages num (length stage + num) stages
 
 stagesCount stages = sum $ map length $ tail stages
@@ -153,7 +153,7 @@ main = do
       case search [] (tritString str) of
         Just circ -> do
           hPutStrLn stderr (show circ)
-          putStrLn (toOutput circ)
+          putStr (toOutput circ)
         Nothing -> putStrLn "Unsolvable"
     _ ->
       putStr ("Usage: "++ prog ++" TRIT_STRING\n")
