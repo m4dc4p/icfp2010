@@ -18,17 +18,21 @@ agent.submit login_form
 
 open("#{result_dir}\\failed.txt", "w") do |failed|
   failed.puts <<-HDR
-CAR\tMSG
-===\t===
+CAR\tDESC\tMSG
+===\t====\t===
 HDR
   open("#{result_dir}\\succeeded.txt", "w") do |succeeded|
     succeeded.puts <<-HDR
-CAR\tMSG
-===\t===
+CAR\tDESC\tMSG
+===\t====\t===
 HDR
     car_list = agent.get('http://icfpcontest.org/icfp10/score/instanceTeamCount')
     car_list.forms.each do |car_form|
       car_id = car_form.action.slice(/icfp10\/instance\/(\d+)\//, 1)
+      car_page = agent.submit car_form
+      # includes label
+      car_desc = car_page.content.slice(/"roo_solution_instance"(.*?)div/,1).slice(/label.*?(\d+)/,1)
+      
       fuel_form = agent.get("http://icfpcontest.org/icfp10/instance/#{car_id}/solve/form").forms[0]
       fuel_form.contents = input_circuit
       result = agent.submit(fuel_form).content.slice(/\<pre\>(.*)\<\/pre\>/m,1).gsub("\n","<br>")
@@ -36,13 +40,12 @@ HDR
       if result =~ /Good!/
         print "*"
         success_cnt += 1
-        succeeded.puts "#{car_id}\t#{result}"
+        succeeded.puts "#{car_id}\t#{car_desc}\t#{result}"
       else
         print "X"
         failed_cnt += 1
-        failed.puts "#{car_id}\t#{result}"
+        failed.puts "#{car_id}\t#{car_desc}\t#{result}"
       end
-      sleep 0.1
     end
   end
 end
