@@ -12,6 +12,9 @@ X::X				0120 2101 2102 0120 2
 1L:1L0L0#0R1R,
    X0R0#0LX:1R			2112 0120 0120 2112 0
 
+The following appears to be a minimal constant-0 circuit
+2R: 0R1L0#1L0L, 0L3R0#0R2L, 1RX0#3L3R, 2L2R0#X1R: 3L
+
 <win>":"<s0: inL inR "0#" outL outR> ... ":"<wout>]
 	     where in/out are 0,1,... and X.
 initially unconnected inputs float at 0
