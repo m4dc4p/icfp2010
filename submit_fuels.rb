@@ -1,25 +1,27 @@
 require 'rubygems'
 require 'mechanize'
-
-agent = Mechanize.new
-login = agent.get('http://icfpcontest.org/icfp10/login')
-login_form = login.form('f')
-
-login_form.j_username = "ooplss2010"
-login_form.j_password = "1484968454509167853383152085303289771444721966896581041165450"
-
-agent.submit login_form
+require 'pathname'
 
 success_cnt, failed_cnt = 0, 0
 # Logged in
 input_circuit = open(ARGV[0], "r").gets(nil)
+result_dir = "submit_fuel_#{Pathname.new(ARGV[0]).basename}"
+if ! File.exists?(result_dir)
+  Dir.mkdir result_dir
+end
 
-open("failed.txt", "w") do |failed|
+agent = Mechanize.new
+login_form = agent.get('http://icfpcontest.org/icfp10/login').form('f')
+login_form.j_username = "ooplss2010"
+login_form.j_password = "1484968454509167853383152085303289771444721966896581041165450"
+agent.submit login_form
+
+open("#{result_dir}\\failed.txt", "w") do |failed|
   failed.puts <<-HDR
 CAR\tMSG
 ===\t===
 HDR
-  open("succeeded.txt", "w") do |succeeded|
+  open("#{result_dir}\\succeeded.txt", "w") do |succeeded|
     succeeded.puts <<-HDR
 CAR\tMSG
 ===\t===
