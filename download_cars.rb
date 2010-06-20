@@ -33,4 +33,4 @@ EOS
 end
 
 agent.get('http://icfpcontest.org/icfp10/static/j_spring_security_logout')
-puts "#{cnt} cars."
+puts "\n#{cnt} cars."
