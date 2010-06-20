@@ -106,13 +106,36 @@ search circ (trit:tail) =
         ) flatCandidates in
   listToMaybe choices
 
+dumpSegment :: Int -> Stage -> String
+dumpSegment i stage =
+  let (last_ori, oris) = (last stage, init stage) in
+  let (i', str) = foldl (\(i',str') ori ->
+          (i' + 1, str'++"F"++show i')
+        ) (i,"") oris in
+  str ++ "B"++show i'
+
+toOutput :: Circ -> String
+toOutput circ =
+  let circ' = reverse circ in
+  output 0 circ
+    where
+      output i [] = " EOF "
+      output i (stage:tail) =
+        let (last_ori, oris) = (last stage, init stage) in
+        let (i', str) = foldl (\(i',str') ori ->
+                (i' + 1, str'++"F"++show i')
+              ) (i,"") oris in
+         output (i'+1) tail ++ str ++ "B"++show i'++" "
+
 main = do
   prog <- System.getProgName
   args <- System.getArgs
   case args of
     [ str ] ->
       case search [] (tritString str) of
-        Just circ -> putStrLn (show circ)
+        Just circ -> do
+          putStrLn (show circ)
+          putStrLn (toOutput circ)
         Nothing -> putStrLn "Unsolvable"
     _ ->
       putStr ("Usage: "++ prog ++" TRIT_STRING\n")

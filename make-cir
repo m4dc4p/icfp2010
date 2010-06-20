@@ -1,0 +1,10 @@
+#/bin/bash
+CAR="$1"
+X="$2"
+echo "$X" | cat prefix.key - | \
+tr -d ' ' | python gate_compiler.py | python circuit-concise.py | \
+#(echo python url-encode.py 12210000010 > test-circuit
+#(echo "G0=12210000010&G1="; cat -) > test-circuit
+(echo "G0=$CAR&G1="; cat -) > test-circuit
+wget 'http://nfa.imn.htwk-leipzig.de/icfpcont/#hotspot' --post-file=test-circuit --output-document=-
+#| perl -ne 'print if $0; $x=1 if /pre/; $x=0 if /hotspot'
