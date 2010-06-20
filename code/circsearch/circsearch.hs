@@ -107,16 +107,13 @@ search circ (trit:tail) =
         ) flatCandidates in
   listToMaybe choices
 
-dumpOri2 :: String -> String -> Ori -> String
-dumpOri2 l r ori = (l ++ left ++ r ++ right) where
-    (left,right) =
-        case ori of
-          Straight -> ("L","R")
-          Cross -> ("R","L")
-
-
 dumpOri :: Int -> Ori -> String
-dumpOri i ori = dumpOri2 (show i) (show i) ori
+dumpOri i ori =
+  (show i ++ left ++ show i ++ right)
+    where (left,right) =
+            case ori of
+              Straight -> ("L","R")
+              Cross    -> ("R","L")
 
 dumpStage :: Int -> Int -> Stage -> String
 dumpStage back_num i [ori] =
@@ -137,13 +134,13 @@ dumpStages back_num num (stage:stages) =
 
 stagesCount stages = sum $ map length $ tail stages
 
-dumpStages' stages =
+dumpCircuit stages =
   dumpStages (negate $ stagesCount stages) 0 (reverse stages)
 
 toOutput :: Circ -> String
 toOutput circ =
     show (stagesCount circ) ++ "L" ++ "\n" ++
-    dumpStages' circ
+    dumpCircuit circ
 
 main = do
   prog <- System.getProgName
