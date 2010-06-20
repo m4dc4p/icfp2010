@@ -107,16 +107,6 @@ search circ (trit:tail) =
         ) flatCandidates in
   listToMaybe choices
 
-{-
-dumpStage :: Int -> Stage -> String
-dumpStage i stage =
-  let (last_ori, oris) = (last stage, init stage) in
-  let (i', str) = foldl (\(i',str') ori ->
-          (i' + 1, str'++"F"++show i')
-        ) (i,"") oris in
-  str ++ "B"++show i'
--}
-
 dumpOri2 :: String -> String -> Ori -> String
 dumpOri2 l r ori = (l ++ left ++ r ++ right) where
     (left,right) =
@@ -128,14 +118,6 @@ dumpOri2 l r ori = (l ++ left ++ r ++ right) where
 dumpOri :: Int -> Ori -> String
 dumpOri i ori = dumpOri2 (show i) (show i) ori
 
-{-
- (show i ++ left ++ show i ++ right) where
-    (left,right) =
-        case ori of
-          Straight -> ("L","R")
-          Cross -> ("R","L")
--}
-
 dumpStage :: Int -> Int -> Stage -> String
 dumpStage back_num i [ori] =
    (if back_num >= 0
@@ -144,23 +126,11 @@ dumpStage back_num i [ori] =
            Straight -> "X" ++ show (negate back_num) ++ "R"
            Cross -> show (negate back_num) ++ "R" ++ "X"
    ) ++ "\n"
---dumpOri2 "X" (show (negate back_num)) ori ++ "\n"
---  "B" ++ show i -- use back_num
 dumpStage back_num i (ori:oris) =
  dumpOri (i+1) ori ++ "\n" ++ dumpStage back_num (i+1) oris
 
-{-
-    (show (i+1) ++ left ++ show (i+1) ++ right) where
-        (left,right) =
-            case ori of
-              Straight -> ("L","R")
-              Cross -> ("R","L")
--}
---  "F" ++ show i ++ dumpStage back_num (i+1) oris
-
 dumpStages :: Int -> Int -> [Stage] -> String
 dumpStages back_num num [] = ""
--- undefined
 dumpStages back_num num (stage:stages) =
   dumpStage back_num num stage ++ "\n" ++
   dumpStages num (length stage + num) stages
@@ -175,19 +145,6 @@ toOutput circ =
     show (stagesCount circ) ++ "L" ++ "\n" ++
     dumpStages' circ
 
-{-
-  let circ' = reverse circ in
-  output 0 circ
-    where
-      output i [] = " EOF "
-      output i (stage:tail) =
-        let (last_ori, oris) = (last stage, init stage) in
-        let (i', str) = foldl (\(i',str') ori ->
-                (i' + 1, str'++"F"++show i')
-              ) (i,"") oris in
-         output (i'+1) tail ++ str ++ "B"++show i'++" "
--}
-
 main = do
   prog <- System.getProgName
   args <- System.getArgs
@@ -196,7 +153,6 @@ main = do
       case search [] (tritString str) of
         Just circ -> do
           hPutStrLn stderr (show circ)
-          --putStrLn (show circ)
           putStrLn (toOutput circ)
         Nothing -> putStrLn "Unsolvable"
     _ ->
