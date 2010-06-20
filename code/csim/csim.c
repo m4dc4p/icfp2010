@@ -2,6 +2,8 @@
  * gcc -Wall -O2 -o csim csim.c && ./csim
  */
 
+#include <time.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -29,27 +31,48 @@ static int ngates;
 // Server gives this input
 static trit input[STEPS] = {0,1,2,0,2,1,0,1,2,1,0,2,0,1,2,0,2};
 
-static trit output[STEPS];
 static int cur_step;
 
 static void step(void)
 {
     int i;
-    ext_in = input[cur_step];
-
     for (i = 0; i < ngates; i++) {
         trit inl = *gates[i].inl;
         trit inr = *gates[i].inr;
         gates[i].outl = (inl - inr + 3) % 3;
         gates[i].outr = (inl * inr + 2) % 3;
     }
-
-    output[cur_step] = *ext_out;
 }
 
-static void simulate(void)
+#if 0
+static void find0(char *name)
 {
+    for (cur_step = 0; ; cur_step++) {
+        if (cur_step < STEPS) {
+            ext_in = input[cur_step];
+        } else {
+            if (cur_step == 40) {
+                printf("%s", name);
+                fflush(stdout);
+            }
+            ext_in = rand() % 3;
+        }
+        step();
+        if (*ext_out != 0) {
+            if (cur_step >= 40) {
+                printf("Up to %d zeros\n", cur_step);
+            }
+            break;
+        }
+    }
+}
+#endif
+
+static void simulate(char *name)
+{
+    printf("%s", name);
     for (cur_step = 0; cur_step < STEPS; cur_step++) {
+        ext_in = input[cur_step];
         step();
         putchar('0' + *ext_out);
     }
@@ -120,11 +143,11 @@ static void parse_gate(int i)
 
 int main(int argc, char *argv[])
 {
+    srand(time(0));
+
     while (fgets(buf, sizeof buf, stdin)) {
         int gate = 0;
         p = buf;
-
-        printf("Line: %s", buf);
 
         parse_dst(); // skip this
         skip_delim();
@@ -140,7 +163,7 @@ int main(int argc, char *argv[])
 
         ngates = gate;
 
-        simulate();
+        simulate(buf);
     }
 
     return 0;
