@@ -17,7 +17,7 @@ while ($data =~ s/^(X|\d+[LR])(X|\d+[LR])0#(X|\d+[LR])(X|\d+[LR])[,:]\s*//) {
     arrow($node."L", $3);
     arrow($node."R", $4);
 
-    print " node$node [label=\"{{<Li>L|<Ri>R}|0|{<Lo>L|<Ro>R}}\"];\n";
+    print " node$node [label=\"{{<Li>L|<Ri>R}|$node|{<Lo>L|<Ro>R}}\"];\n";
 
 } continue {
     $node++;
@@ -27,7 +27,14 @@ print "}\n";
 
 sub arrow {
     my ($from, $to) = @_;
-    print " ". label($from) ."o -> ". label($to). "i;\n";
+    if ($to ne "X" && $from ne "X" && atoi($to) <= atoi($from)) {
+        # Back edge
+        print " ".  label($to) ."i -> ". label($from) ."o";
+        print " [ arrowhead=none, arrowtail=onormal ]\n";
+    } else {
+        # Forward edge
+        print " ". label($from) ."o -> ". label($to) ."i\n";
+    }
 }
 
 sub label {
@@ -37,5 +44,11 @@ sub label {
     }
     $str =~ /^(\d+)([LR])$/ or die;
     return "node$1:$2";
+}
+
+sub atoi {
+    my ($str) = @_;
+    $str =~ /^(\d+)/ or die;
+    return $1;
 }
 
