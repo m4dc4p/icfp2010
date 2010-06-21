@@ -1,0 +1,24 @@
+1 1 11 - 1 tank, 1 ingredient.
+-> 1 1 (1: 1) - according to "fuel" number definition
+-> 1 1 (11) - according to natural number definition - UNLIKELY
+
+1 1 10 - c(1,1) must be >= 0
+-> 1 1 (1: 0) - according to "fuel" number definition
+-> 1 1 (10) - according to "natural" number definition - UNLIKELY
+
+1 220 220 220 220 220 - 1 tank, 2 ingredient
+
+220 220 220220220220220220220220220220220 - 2 tank, 2 ingredient
+
+2210 1 111 111 111 - DIMENSION MISMATCH (attempt at 3 tank, 1 ingredient)
+
+220 1 111111 - 2 tank, 1 ingredient.
+
+220 1 112112 - 2 tank, 1 ingredient
+
+220 1 122000122000 - 2 tank, 1 ingredient FAILS TO PARSE
+
+220 1 2200022000 - DIMENSION MISMATCH
+
+220 220 22022010220012202201022001 - DIMENSION MISMATCH
+
