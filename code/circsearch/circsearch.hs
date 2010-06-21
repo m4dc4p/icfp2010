@@ -10,7 +10,6 @@ data Ori = Straight | Cross deriving (Eq, Ord, Enum, Bounded, Show)
 type Stage = [Ori] -- must be nonempty
 type Circ = [Stage] -- reads from left to right as one would expect
 type TT = (Trit,Trit)
-type Table = Array TT TT -- truth table
 
 tritString :: String -> [Trit]
 tritString s =
@@ -25,7 +24,7 @@ tritString s =
 allTT :: [TT]
 allTT = [ (t1,t2) | t1 <- [minBound..maxBound], t2 <- [minBound..maxBound] ]
 
-ttGate :: Table
+ttGate :: Array TT TT
 ttGate = array (minBound,maxBound) [ ((T0,T0), (T0,T2)),
                                      ((T0,T1), (T2,T2)),
                                      ((T0,T2), (T1,T2)),
@@ -56,10 +55,6 @@ evalStage stage tt =
 evalCirc :: Circ -> TT -> TT
 evalCirc circ tt =
   foldl (flip evalStage) tt circ
-
-makeTable :: (TT -> TT) -> Table
-makeTable f =
-  array (minBound,maxBound) [ (tt, f tt) | tt <- allTT ]
 
 {-
   Heuristic: in left truth table of all stages assembled so far, maximize the
