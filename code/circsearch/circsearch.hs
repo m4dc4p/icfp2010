@@ -149,6 +149,8 @@ main = do
     [ str ] ->
       case search [] (tritString str) of
         Just circ -> do
+          hPutStrLn stderr
+              ("Circuit has "++ show (length (concat circ)) ++" gates")
           hPutStrLn stderr (show circ)
           putStr (toOutput circ)
         Nothing -> putStrLn "Unsolvable"
