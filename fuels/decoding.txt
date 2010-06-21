@@ -1,0 +1,141 @@
+how to decode fuels, with some of thought process
+=================================================
+
+will quit soon.  very confusing, but here are some patterns:
+
+1 ingredient
+
+for t fuels with 1 ingredient, pattern is <n:L> 1 <x1:N> 11 <x2:N> ... 11 <xn:N>
+
+the initial single 1 and subsequent double 1's is not a typo ...
+
+where :L means the "list" encoding (as in num1.cc), and :N means the "nat" encoding, as pasrsed by ted's code above for section numbers.  e.g., here's a 7 fuels 1 ingrediant for a car with 1 chamber with pipes
+0 0 1 1 2 2
+0 1 2
+(yes, only 3 fuelts, so 4 fuels unused)
+
+$ echo '1 2222000 0 0 10 10 11 11 0 2210 0 10 11' | tr -d ' ' | runhaskell teds_car_parser.hs
+"1 chambers in this car."
+"chamber 1: ([0,0,1,1,2,2],0,[0,1,2])"
+
+$ ./make-post-quiet '1 2222000 0 0 10 10 11 11 0   2210 0 10 11' '2222001 1  1 10   11 10   11 11   11 10   11 10   11 10   11 10'
+      >Just 159</pre
+this is a legal prefix
+you have produced fuel
+for 7 tanks
+using 1 ingredients of air
+checking reaction chamber 0
+Good! The car can use this fuel.</pre
+
+notice the topology of that car needs any fuels where any tank (scalar) is greather than 1, so e.g.
+
+$ ./make-post-quiet '1 2222000 0 0 10 10 11 11 0   2210 0 10 11' '2222001 1  1 10   11 10   11 10   11 10   11 10   11 10   11 10'
+      >Nothing</pre
+this is a legal prefix
+you have produced fuel
+for 7 tanks
+using 1 ingredients of air
+checking reaction chamber 0
+first fuel component must increase</pre
+
+and to see that the "10"s are 1's, so e.g. (the fuel tanks are counted from 0):
+
+$ ./make-post-quiet '1 2222000 0 0 10 10 11 11 0   2210 0 10 11' '2222001 1  1 10   11 10   11 10   11 10   11 10   11 0   11 10' 
+      >Nothing</pre
+this is a legal prefix
+you have produced fuel
+for 7 tanks
+using 1 ingredients of air
+check fuel for tank 5
+c_{1,1} must be &gt;= 1</pre
+
+1 fuel
+
+for 1 fuels with t ingredents (easier/less confusing than above), the pattern is
+
+<1:L> <t:L> <t:L> <x11:N> ... <xn1:N> <t:L> <x21:N> ... <x2n:N> ... (t rows of length t, each prefixed by <t:L>)
+
+(and actually, i didn't check that it was "row major order", but hat cold be done b cooking up an appropriate car, which is a solved problem)
+
+e.g. some valid 3x3 fuels of form
+
+x11 0 0
+0    0 0
+0    0 0
+
+$ echo '1 2210 000 010' | tr -d ' ' | runhaskell teds_car_parser.hs
+"1 chambers in this car."
+"chamber 1: ([0,0,0],0,[0])"
+
+so top row has x11^3 and 0's, and bottom row ha the fuel, so need x11 > 1.
+
+$ ./make-post-quiet '1 2210 000 010' '1 2210 2210 11 0 0 2210 0 0 0 2210 0 0 0' ==> success: x11 = 2
+$ ./make-post-quiet '1 2210 000 010' '1 2210 2210 10 0 0 2210 0 0 0 2210 0 0 0' ==> fail: x11 = 1, "first fuel component must increase"
+$ ./make-post-quiet '1 2210 000 010' '1 2210 2210 0 0 0 2210 0 0 0 2210 0 0 0'  ==> fail: x11 = 0, "c_{1,1} must be &gt;= 1"
+
+strange invariant SOLVED IT?!!!:
+
+for n fuels and m ingredients, you need n+m-1 zeros to get a properly formatted "dimension mismatch" fuel, e.g.
+
+$ ./make-post-quiet '1 2210 000 010' '2212 220 00000' ==> parse error
+$ ./make-post-quiet '1 2210 000 010' '2212 220 000000' ==> dim mismatch, 5 fuels, 2 ingredients, 6 zeros.
+
+i can't figure this out at all ... oh, wait! for each fuel after the first, you have to duplicate the first :L number in that fuel's description. this gives a total of ... wait, doesn't explain invariant ..., but:
+
+2 2x2 fuels:
+
+$ ./make-post-quiet '1 2210 000 010' '220 220 220 0 0 220 0 0 220220 0 0 220 0 0' ==> fail tank 0: "c_{1,1} must be &gt;= 1</pre"
+$ ./make-post-quiet '1 2210 000 010' '220 220 220 10 0 220 0 0 220220 0 0 220 0 0' ==> fail tank 1: "c_{1,1} must be &gt;= 1</pre"
+$ ./make-post-quiet '1 2210 000 010' '220 220 220 10 0 220 0 0 220220 10 0 220 0 0' ==> fail: "first fuel component must increase</pre"
+$ ./make-post-quiet '1 2210 000 010' '220 220 220 11 0 220 0 0 220220 10 0 220 0 0' ==> success
+
+3 2x2 fuels:
+
+$ ./make-post-quiet '1 2210 000 010' '2210 220 220 11 0 220 0 0 220220 10 0 220 0 0 220220 0 0 220 0 0' ==> fail: "c_{1,1} must be &gt;= 1" in tank 2
+$ ./make-post-quiet '1 2210 000 010' '2210 220 220 11 0 220 0 0 220220 10 0 220 0 0 220220 10 0 220 0 0' ==> success
+
+2 3x3 fuels:
+
+$ ./make-post-quiet '1 2210 000 010' '220 2210 2210 10 0 0 2210 0 0 0 2210 0 0 0 2210 2210 10 0 0 2210 0 0 0 2210 0 0 0' ==> fail: fail: "first fuel component must increase</pre"
+$ ./make-post-quiet '1 2210 000 010' '220 2210 2210 11 0 0 2210 0 0 0 2210 0 0 0 2210 2210 10 0 0 2210 0 0 0 2210 0 0 0' ==> success
+
+grand finale:
+
+car requiring non-commuting fuels:
+
+$ echo '1 2210 0 10 11 0 2210 10 0 11' | tr -d ' ' | runhaskell teds_car_parser.hs
+"1 chambers in this car."
+"chamber 1: ([0,1,2],0,[1,0,2])"
+
+$ ./make-post-quiet '1 2210 0 10 11 0 2210 10 0 11' '2210 220 220 10 10 220 0 10 220220 10 10 220 10 0 220220 10 0 220 0 0'
+      >Just 209</pre
+this is a legal prefix
+you have produced fuel
+for 3 tanks
+using 2 ingredients of air
+checking reaction chamber 0
+Good! The car can use this fuel.</pre
+
+:)
+
+figured out the "strange invariant": it's actually that the fuel format is highly uniform.  the car format is much more difficult.
+
+schemas:
+
+fuel_code(n,m) ::= list(n,fuel(m))
+fuel(m) ::= matrix(m)
+matrix(m) ::= list(m,row(m)) # actually, the rows can have different lengths :P
+row(m) ::= list(m, nat)
+list(n,a) ::= n:L a1 ... an
+nat ::= <number>:N
+
+where n:L is a number in "list" format (num1.cc), and n:N is a num in "nat" format (teds_car_parser.hs).
+
+so a fuel i sjust a list of matrices.  my "straing invariant", that i needed n + m - 1 zeros when i tried to crete all zeros fuels, was really that there is nothing specieal abou the second number ina fuel code (not a global "number of ingredients" like i thought): it's just the number of rows (assuming row major order) in the first fuel matrix :P
+
+e.g.some weird fuels (guesses, can't verify of course, besides that they parse, but fail if the last char is removed):
+
+220 (220 (0) (0)) (0) => [ [[],[]], [] ] # an example of the "invariant"
+220 (2212 (0) (0) (0) (0) (0)) (0) => [ [[],[],[],[],[]], [] ] # and another
+220 (220 (1 10) (0)) (1 (1 10)) => [ [[1],[]], [[1]] ]
+1 (2210 (2210 11 10 0) (220 11 10) (1 11)) ==> [ [ [2,1,0], [2,1], [2] ] ]
