@@ -11,6 +11,8 @@ circuit: code/circsearch/circsearch
 	@code/circsearch/circsearch `cat` | \
 	  python circuit-concise.py
 
+prefix_circuit_quick:
+	@ { echo -n 11021210112101221; cat; } | python gate_compiler.py | python circuit-concise.py
 # the key string iain found: 11021210112101221
 prefix_circuit:
 	@ { echo -n 11021210112101221; cat; } | make -s circuit

@@ -15,7 +15,7 @@
 CAR=$(echo "$1" | tr -d ' ')
 X="$2"
 echo "${X}2222222" | tr -d ' ' | \
-make prefix_circuit 2>/dev/null | \
+make prefix_circuit_quick 2>/dev/null | \
 (echo "G0=$CAR&G1="; cat -) > test-circuit
 wget -q 'http://nfa.imn.htwk-leipzig.de/icfpcont/#hotspot' \
   --post-file=test-circuit --output-document=- | \
