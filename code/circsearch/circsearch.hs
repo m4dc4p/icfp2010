@@ -139,8 +139,12 @@ dumpCircuit stages =
 
 toOutput :: Circ -> String
 toOutput circ =
-    show (stagesCount circ) ++ "L" ++ "\n" ++
-    dumpCircuit circ
+    -- Add a dummy stage with one gate to the left of the circuit, ensuring
+    -- that our last stage gets input 0. The above code could probably be
+    -- simplified somewhat if it had knowledge of this gate.
+    let circ' = [Straight] : circ in
+    show (stagesCount circ') ++ "L" ++ "\n" ++
+    dumpCircuit circ'
 
 main = do
   prog <- System.getProgName
@@ -149,8 +153,6 @@ main = do
     [ str ] ->
       case search [] (tritString str) of
         Just circ -> do
-          hPutStrLn stderr
-              ("Circuit has "++ show (length (concat circ)) ++" gates")
           hPutStrLn stderr (show circ)
           putStr (toOutput circ)
         Nothing -> putStrLn "Unsolvable"
