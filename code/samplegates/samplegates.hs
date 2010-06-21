@@ -1,14 +1,8 @@
 -- ghc -o samplegates -O samplegates.hs
 
 import qualified System
-import List
+import Data.List
 import Data.Array.IArray
-
--- Found on the 'net:
--- http://www.haskell.org/pipermail/haskell/2006-July/018293.html
-permute        :: [a] -> [[a]]
-permute []      = [[]]
-permute list    = concat $ map (\(x:xs) -> map (x:) (permute xs)) (take (length list) (unfoldr (\x -> Just (x, tail x ++ [head x])) list))
 
 concatWith :: [a] -> [[a]] -> [a]
 concatWith _ [] = []
@@ -25,7 +19,7 @@ type Bidi = (Array (Int,InOut) Int, Int)
 
 ofLength :: Int -> [Circ]
 ofLength n =
-  [ (perm, ext) | perm <- permute [0 .. 2*n-1], ext <- [0 .. 2*n-1] ]
+  [ (perm, ext) | perm <- permutations [0 .. 2*n-1], ext <- [0 .. 2*n-1] ]
 
 -- TODO: rule out disconnected solutions
 
