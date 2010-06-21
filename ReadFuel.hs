@@ -26,12 +26,13 @@ tank = do
 coeffs :: GenParser Char st [Integer]
 coeffs = do
   r <- many1 coeff
-  eol
+  comment <|> eol
+  comments <|> empty -- in-matrix comment.
   return r
 
 coeff :: GenParser Char st Integer
 coeff = do
-  digits <- many1 digit 
+  digits <- blanks >> many1 digit 
   blanks
   case reads digits of
     [] -> fail  $ "Can't parse (1): " ++ show digits
@@ -48,7 +49,8 @@ whiteSpace = (char '#' >> manyTill anyChar newline >> return ()) <|> eol
 blankLines :: GenParser Char st ()
 blankLines = skipMany (comment <|> (blanks >> eol) <|> eol)
 
-comment = char '#' >> skipMany (noneOf ['\n']) >> eol
+comments = skipMany comment
+comment = blanks >> char '#' >> skipMany (noneOf ['\n']) >> eol
 
 blankLine = (skipMany (char ' ') >> eol) <|> eol <|> eof
 eol = newline >> return ()
@@ -65,4 +67,6 @@ main = do
             (i : _) -> S.readFile i
             _ -> error $ "Must provide input file name in args: " ++ show args
   f <- fuel desc
-  putStrLn (show f)
+  case f of 
+    Left err -> putStrLn (show err)
+    Right tanks -> mapM_ (putStrLn . show ) tanks
