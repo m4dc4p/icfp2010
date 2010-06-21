@@ -54,11 +54,12 @@ for line in fileinput.input():
             NODES[i] = Gate(outLpos=int(fm[0]), outLdir=fm[1], outRpos=int(fm[2]), outRdir=fm[3])
         else:
             if len(fm) == 3:
+                #print fm
                 if fm[0] == 'X':
                     NODES[i] = Gate(outLdir=fm[0], outRpos=int(fm[1]), outRdir=fm[2])
                 else:
-                    if fm[2] == 'X':
-                        NODES[i] = Gate(outLpos=int(fm[0]), outLdir=fm[1], outRdir=fm[2])
+                    #if fm[2] == 'X':
+                    NODES[i] = Gate(outLpos=int(fm[0]), outLdir=fm[1], outRdir='X')
             else:
                 print "couldn't parse the line ", fm
     #print "added", i

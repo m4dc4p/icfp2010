@@ -1,0 +1,10 @@
+
+echo KEY NUM
+  | gate-compiler
+  | simple-circuit  > circuit
+
+
+make-cir CAR FUEL
+
+
+
