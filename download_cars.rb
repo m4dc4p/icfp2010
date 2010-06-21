@@ -1,36 +1,30 @@
 require 'rubygems'
 require 'mechanize'
+require 'pathname'
 
 agent = Mechanize.new
-login = agent.get('http://icfpcontest.org/icfp10/login')
-login_form = login.form('f')
-
-login_form.j_username = "ooplss2010"
-login_form.j_password = "1484968454509167853383152085303289771444721966896581041165450"
-
-agent.submit login_form
-
-# Logged in
-
+car_form = agent.get('http://nfa.imn.htwk-leipzig.de/recent_cars/#hotspot').forms[0]
 cnt = 0  
 open("cars.txt", "w") do |f|
   f.puts <<-EOS
 CAR ID\tDESCRIPTION
 ======\t===========
 EOS
-  car_list = agent.get('http://icfpcontest.org/icfp10/score/instanceTeamCount')
-  car_list.forms.each do |car_form|
-    # car_list.forms[0].action.slice(/icfp10\/instance\/(\d+)\//, 1)
-    car_id = car_form.action.slice(/icfp10\/instance\/(\d+)\//, 1)
-    car_page = agent.submit car_form
-    # includes label
-    car_desc = car_page.content.slice(/"roo_solution_instance"(.*?)div/,1).slice(/label.*?(\d+)/,1)
-    f.puts "#{car_id}\t#{car_desc}"
-    print "*"
-    cnt += 1
-    sleep 0.1
+  car_id = 1
+  found = true
+  while found 
+    car_form["G0"] = car_id
+    content = agent.submit(car_form).content
+    found = false
+    content.gsub(/\<pre.*?\>\((\d+),.*?,\&quot\;\d+\&quot\;\)/m) do |car|
+      car_id = $1
+      f.puts "#{car_id}\t" # don't store descriptions now
+      found = true
+      print "*"
+      cnt += 1
+    end
+    car_id = car_id.to_i + 1
   end
 end
 
-agent.get('http://icfpcontest.org/icfp10/static/j_spring_security_logout')
 puts "\n#{cnt} cars."

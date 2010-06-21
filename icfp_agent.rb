@@ -9,13 +9,16 @@ module Util
       retry
     rescue Mechanize::ResponseCodeError
       if $!.response_code =~ /503/
-        puts "503 Error: retrying."
+        puts "503 Error: (#{$!}); retrying."
         retry
+      elsif $!.response_code =~ /404/
+        puts "404 Error (#{$!}): #{$!.page}."
       else
-        puts "Server Error: #{$!.response_code} (#{$!.class}, #{$!.response_code.class})."
+        puts "Server Error (#{$!}, #{$!.response_code} #{$!.class})."
       end
     rescue Object
       puts "Error: #{$!} (#{$!.class})."
+      raise $!
     end
   end
 end
@@ -26,24 +29,23 @@ class ICFPAgent
   class Car
     include Util
 
-    attr_reader :car_id, :icfp, :car_page, :result
+    attr_reader :car_id, :icfp, :result
 
-    def initialize(agent, car_id, car_page)
+    def initialize(agent, car_id)
       @icfp = agent
       @car_id = car_id
-      @car_page = car_page
     end
 
     # Description of the car.
     def description
-      @description ||= @car_page.content.slice(/"roo_solution_instance"(.*?)div/,1).slice(/label.*?(\d+)/,1)
+      @description ||= car_page.content.slice(/"roo_solution_instance"(.*?)div/,1).slice(/label.*?(\d+)/,1)
     end
 
     # Submit the circuit for the car. Returns
     # true or false, if circuit provided fuel or not.
     # Sets :result to the text given in either case.
     def submit_fuel(fuel)
-      fuel_form = @car_page.forms[0]
+      fuel_form = car_page.forms[0]
       fuel_form.contents = fuel
 
       @result = with_retry do
@@ -51,6 +53,10 @@ class ICFPAgent
       end
       
       @result =~ /Good!/
+    end
+
+    def car_page
+      @car_page ||= @icfp.safe_get("http://icfpcontest.org/icfp10/instance/#{@car_id}/solve/form")
     end
   end
 
@@ -88,22 +94,25 @@ class ICFPAgent
   # Enumerates a list of cars.
   class CarEnum
     include Enumerable
-    def initialize(icfp, car_list)
-      @car_list = car_list
+    def initialize(icfp)
+      cnt = 0
+      @car_list = open("cars.txt").gets(nil).collect { |l| cnt += 1; l.split("\t")[0].strip }.slice(2, cnt)
       @icfp = icfp
     end
 
     def each
-      @car_list.gsub(/car.*?(\d+)/) do |__|
-        car_id = $1
-        car_page = @icfp.safe_get("http://icfpcontest.org/icfp10/instance/#{car_id}/solve/form")
-        yield Car.new(@icfp, car_id, car_page)
+      @car_list.each do |car_id|
+        begin
+          yield Car.new(@icfp, car_id)
+        rescue Mechanize::ResponseCodeError
+          raise $! unless $!.response_code =~ /404/ 
+        end
       end
     end
   end
 
   # Return an array of all cars
   def all_cars
-    CarEnum.new(self, @car_list ||= safe_get('http://nfa.imn.htwk-leipzig.de/information/cars').content)
+    CarEnum.new(self)
   end
 end
