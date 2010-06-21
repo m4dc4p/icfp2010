@@ -1,0 +1,48 @@
+Car Details
+-----------
+
+A car is:
+
+      car     ::= (chamber ...)      "a list of chambers"
+      chamber ::= <type pipe pipe>   "where we arbitrarily guess the first pipe is the up one"
+      type    ::= MASTER
+               |  AUXILLIARY
+      pipe    ::= (fuel ...)         "a list of sections, each is fed from a fuel (tank)"
+      fuel    ::= natural-number
+
+The next step is to figure out the encoding of this structure.  As an initial hypothesis, based on cursory examination of the (vast) array of cars available:
+
+    natural-number ::= binary-encoding  (0 => 0
+    		       			 1 => 1
+					 2 => 10
+					 3 => 11
+					 4 => 100 ...)
+			and 2 is the delimiter for the end of a number.
+
+For lists, you either need a count (at the beginning), or a separator between elements.
+For tuples, if the element types are fixed size: e.g. type, you don't need a separator;
+    but to indicate the end of the first pipe, we do.
+
+There are also conditions
+      1) cars must have master chamber (with associated fuel requirement C_1,1 > 0)
+      2) fuel tanks must be direct/indirectly connected (cf document for details).
+
+Let's assume the simplest (valid) car is encoded as 122000010, and matches:
+
+            fuel 0
+	      |
+	      v
+      	   +-----------+       +----+
+      -----|M          |-------|D   |
+	   +-----------+       | I  |
+                               |  F |
+      -------------------------|   F|
+			       +----+
+
+  then we try to encode (<MASTER (0) ()>) as 122000010.
+
+       one chamber:    1 2
+
+       	   master chamber: 2 (?)
+
+       	   ...

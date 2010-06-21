@@ -19,13 +19,19 @@ initially unconnected inputs float at 0
 the circuit is asynchronous ... i.e. forward propagation is instantaneous;
     	       		    	     backward happens at next clock tick
 
-the operations are:
-                             R
-                          |0 1 2
-     Lout = Lin - Rin    -+-----
-                         0|0 2 1
-                       L 1|1 0 2
-                         2|2 1 0
+!! world inputs/outputs do not need to be on the same gate:
+0L:X1L0#1L1R,
+   0L0R0#0RX:1R			2202 0111 0112 2202 0
+
+
+the (non-commutative) operations are:
+
+                                R
+                             |0 1 2
+     Lout = Lin - Rin       -+-----
+                            0|0 2 1
+                          L 1|1 0 2
+                            2|2 1 0
 
 
                              |0  1  2
@@ -33,6 +39,8 @@ the operations are:
                             0|2  2  2
                             1|2  0  1
                             2|2  1  0
+
+observations:
 
           a
 ------------
