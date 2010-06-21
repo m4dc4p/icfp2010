@@ -14,12 +14,13 @@ type Ingredients = [Ingredient]
 type Ingredient = Integer
 
 fuel input = do
-  let parseFuel = many1 (try (blankLines >> tank) <|> tank)
+  let parseFuel = (try blankLines <|> empty) >> many1 tank
   return $ parse parseFuel "unknown" input
   
 tank = do
   ingrs <- many1 coeffs
   blankLine
+  try blankLines <|> empty
   return (Tank ingrs)
 
 coeffs :: GenParser Char st [Integer]
@@ -44,14 +45,19 @@ ignoreLines = skipMany whiteSpace
 whiteSpace :: GenParser Char st ()
 whiteSpace = (char '#' >> manyTill anyChar newline >> return ()) <|> eol
 
-blankLines :: GenParse Char st ()
-blankLines = 
-blankLines = eol <|> eof
-blankLine = eol <|> eof
+blankLines :: GenParser Char st ()
+blankLines = skipMany (comment <|> (blanks >> eol) <|> eol)
+
+comment = char '#' >> skipMany (noneOf ['\n']) >> eol
+
+blankLine = (skipMany (char ' ') >> eol) <|> eol <|> eof
 eol = newline >> return ()
 
 blanks :: GenParser Char st ()
 blanks = skipMany (satisfy (`elem` [' ', '\t']))
+
+empty :: GenParser Char st ()
+empty = return ()
 
 main = do
   args <- getArgs
