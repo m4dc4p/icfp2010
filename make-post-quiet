@@ -1,0 +1,23 @@
+#/bin/bash
+
+# usage: ./make-cir CAR_CODE FUEL_CODE
+
+# makes the circuit for FUEL_CODE, postfixed wth 2222222, and submits
+# that circuit along with CAR_CODE to the test page.  both CAR_CODE
+# and FUEL_CODE may contain embedded whitespace, to aid readability.
+# (embedded whitespace is removed).
+
+# FUEL_CODE is postfixed with 2222222 to avoid thinking you specified
+# a valid fuel when actually you needed more trits, but you got lucky
+# and the circuit happenened to produce them. experience shows a
+# string of many 2's needs many trits after it.
+
+CAR=$(echo "$1" | tr -d ' ')
+X="$2"
+echo "${X}2222222" | tr -d ' ' | \
+make prefix_circuit 2>/dev/null | \
+(echo "G0=$CAR&G1="; cat -) > test-circuit
+wget -q 'http://nfa.imn.htwk-leipzig.de/icfpcont/#hotspot' \
+  --post-file=test-circuit --output-document=- | \
+# only print the relevant part (assumes legal prefix, which we get from above {cat prefix.key}
+sed -nre '/legal prefix/,/<\/pre/p' -e '/Nothing|Just/p'

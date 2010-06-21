@@ -14,23 +14,25 @@ type Ingredients = [Ingredient]
 type Ingredient = Integer
 
 fuel input = do
-  let parseFuel = many1 (try (blankLines >> tank) <|> tank)
+  let parseFuel = (try blankLines <|> empty) >> many1 tank
   return $ parse parseFuel "unknown" input
   
 tank = do
   ingrs <- many1 coeffs
   blankLine
+  try blankLines <|> empty
   return (Tank ingrs)
 
 coeffs :: GenParser Char st [Integer]
 coeffs = do
   r <- many1 coeff
-  eol
+  comment <|> eol
+  comments <|> empty -- in-matrix comment.
   return r
 
 coeff :: GenParser Char st Integer
 coeff = do
-  digits <- many1 digit 
+  digits <- blanks >> many1 digit 
   blanks
   case reads digits of
     [] -> fail  $ "Can't parse (1): " ++ show digits
@@ -44,14 +46,20 @@ ignoreLines = skipMany whiteSpace
 whiteSpace :: GenParser Char st ()
 whiteSpace = (char '#' >> manyTill anyChar newline >> return ()) <|> eol
 
-blankLines :: GenParse Char st ()
-blankLines = 
-blankLines = eol <|> eof
-blankLine = eol <|> eof
+blankLines :: GenParser Char st ()
+blankLines = skipMany (comment <|> (blanks >> eol) <|> eol)
+
+comments = skipMany comment
+comment = blanks >> char '#' >> skipMany (noneOf ['\n']) >> eol
+
+blankLine = (skipMany (char ' ') >> eol) <|> eol <|> eof
 eol = newline >> return ()
 
 blanks :: GenParser Char st ()
 blanks = skipMany (satisfy (`elem` [' ', '\t']))
+
+empty :: GenParser Char st ()
+empty = return ()
 
 main = do
   args <- getArgs
@@ -59,4 +67,6 @@ main = do
             (i : _) -> S.readFile i
             _ -> error $ "Must provide input file name in args: " ++ show args
   f <- fuel desc
-  putStrLn (show f)
+  case f of 
+    Left err -> putStrLn (show err)
+    Right tanks -> mapM_ (putStrLn . show ) tanks

@@ -54,41 +54,27 @@ HDR
 CAR\tDESC\tMSG
 ===\t====\t===
 HDR
-    car_list = with_retry do
-      agent.get('http://icfpcontest.org/icfp10/score/instanceTeamCount')
-    end
-    car_list.forms.each do |car_form|
+    car_ids.each do |car_id|
+      car_page = with_retry do
+        agent.get("http://icfpcontest.org/icfp10/instance/#{car_id}/solve/form")
+      end
 
-      car_id = car_form.action.slice(/icfp10\/instance\/(\d+)\//, 1)
-      if car_ids.include? car_id
-        car_ids.delete car_id
-        car_page = with_retry do
-          agent.submit car_form
-        end
-
-        car_desc = car_page.content.slice(/"roo_solution_instance"(.*?)div/,1).slice(/label.*?(\d+)/,1)
-        
-        fuel_form = with_retry do
-          agent.get("http://icfpcontest.org/icfp10/instance/#{car_id}/solve/form").forms[0]
-        end
-
-        fuel_form.contents = input_circuit
-        result = with_retry do
-          agent.submit(fuel_form).content.slice(/\<pre\>(.*)\<\/pre\>/m,1).gsub("\n","<br>")
-        end
-        
-        if result =~ /Good!/
-          print "*"
-          success_cnt += 1
-          succeeded.puts "#{car_id}\t#{car_desc}\t#{result}"
-        else
-          print "X"
-          failed_cnt += 1
-          failed.puts "#{car_id}\t#{car_desc}\t#{result}"
-        end
-
-        print "submitted #{car_id}."
-        break
+      car_desc = car_page.content.slice(/"roo_solution_instance"(.*?)div/,1).slice(/label.*?(\d+)/,1)
+      
+      fuel_form = car_page.forms[0]
+      fuel_form.contents = input_circuit
+      result = with_retry do
+        agent.submit(fuel_form).content.slice(/\<pre\>(.*)\<\/pre\>/m,1).gsub("\n","<br>")
+      end
+      
+      if result =~ /Good!/
+        print "*"
+        success_cnt += 1
+        succeeded.puts "#{car_id}\t#{car_desc}\t#{result}"
+      else
+        print "X"
+        failed_cnt += 1
+        failed.puts "#{car_id}\t#{car_desc}\t#{result}"
       end
     end
   end

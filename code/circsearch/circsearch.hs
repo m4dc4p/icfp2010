@@ -10,7 +10,6 @@ data Ori = Straight | Cross deriving (Eq, Ord, Enum, Bounded, Show)
 type Stage = [Ori] -- must be nonempty
 type Circ = [Stage] -- reads from left to right as one would expect
 type TT = (Trit,Trit)
-type Table = Array TT TT -- truth table
 
 tritString :: String -> [Trit]
 tritString s =
@@ -25,7 +24,7 @@ tritString s =
 allTT :: [TT]
 allTT = [ (t1,t2) | t1 <- [minBound..maxBound], t2 <- [minBound..maxBound] ]
 
-ttGate :: Table
+ttGate :: Array TT TT
 ttGate = array (minBound,maxBound) [ ((T0,T0), (T0,T2)),
                                      ((T0,T1), (T2,T2)),
                                      ((T0,T2), (T1,T2)),
@@ -56,10 +55,6 @@ evalStage stage tt =
 evalCirc :: Circ -> TT -> TT
 evalCirc circ tt =
   foldl (flip evalStage) tt circ
-
-makeTable :: (TT -> TT) -> Table
-makeTable f =
-  array (minBound,maxBound) [ (tt, f tt) | tt <- allTT ]
 
 {-
   Heuristic: in left truth table of all stages assembled so far, maximize the
@@ -139,8 +134,12 @@ dumpCircuit stages =
 
 toOutput :: Circ -> String
 toOutput circ =
-    show (stagesCount circ) ++ "L" ++ "\n" ++
-    dumpCircuit circ
+    -- Add a dummy stage with one gate to the left of the circuit, ensuring
+    -- that our last stage gets input 0. The above code could probably be
+    -- simplified somewhat if it had knowledge of this gate.
+    let circ' = [Straight] : circ in
+    show (stagesCount circ') ++ "L" ++ "\n" ++
+    dumpCircuit circ'
 
 main = do
   prog <- System.getProgName
@@ -149,7 +148,7 @@ main = do
     [ str ] ->
       case search [] (tritString str) of
         Just circ -> do
-          hPutStrLn stderr (show circ)
+          --hPutStrLn stderr (show circ)
           putStr (toOutput circ)
         Nothing -> putStrLn "Unsolvable"
     _ ->

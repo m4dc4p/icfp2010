@@ -1,0 +1,42 @@
+########################
+# Fuels are described by tanks. Each file describes
+# one fuel. 
+# 
+# Tanks are separated by at least one non-coment, blank 
+# line.
+#
+# Each tank is a matrix of coeffecients. Matrices
+# are specified by rows. Each coefficient is an
+# integer number.
+#
+# Any text after # is considered a comment. There are no
+# in-line comments, only per-line or end-of-line comments.
+#
+# Output is currenty Haskell's "Show" syntax
+# for lists, but that can be changed. Each line
+# represents a tank.
+########################
+
+# Tank 1
+2 3 4 # Row 1
+3 4 5 # Row 2
+2 3 9 # Row 3
+
+# Tank 2. Notice one blank line
+# is required.
+2 3 4
+3 4 5
+# Comments can appear in the matrix as well.
+2 3 9
+# Tank 2, continued, since we do not
+# have a blank line.
+100 100 100
+8 8 8
+100 100 100
+
+# Tank 3
+2 3 4
+3 4 5
+2 3 9
+
+# Comments can appear at the end as well.
