@@ -148,7 +148,7 @@ main = do
     [ str ] ->
       case search [] (tritString str) of
         Just circ -> do
-          hPutStrLn stderr (show circ)
+          --hPutStrLn stderr (show circ)
           putStr (toOutput circ)
         Nothing -> putStrLn "Unsolvable"
     _ ->
